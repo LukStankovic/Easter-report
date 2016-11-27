@@ -145,11 +145,23 @@ void EasterDate(int year, int& day, int& month){
     int Y = ( 8 * C + 5 ) / 25 - 5;
     int Z = ( 5 * year ) / 4 - X - 10;
     int E = ( 11 * G + 20 + Y - X ) % 30;
-    if (E == 24) {E++;}
-    if ((E == 25) && (G > 11)) {E++;}
+    
+    if (E == 24){
+        E++;
+    }
+    
+    if ((E == 25) && (G > 11)){
+        E++;
+    }
+    
     int N = 44 - E;
-    if (N < 21) {N = N + 30;}
+    
+    if (N < 21){
+        N = N + 30;
+    }
+    
     int P = ( N + 7 ) - ( ( Z + N ) % 7 );
+    
     if ( P > 31 ){
         P = P - 31;
         month = 4;
@@ -174,28 +186,36 @@ int easterReport (const string& years, const string& outFileName){
         if(yearsArray[i] <= 1582 || yearsArray[i] >= 2200)
             return EASTER_INVALID_YEARS;
     }
+
     
-    
-    
-    for(int i = 0; i < numOfYears; i++){
-        int day, month;
-        EasterDate(yearsArray[i], day, month);
-    }
     
     // OTEVRENI SOUBORU A KONTROLA IO
-    ofstream file (outFileName);
+    ofstream file(outFileName);
     if(file.fail()){
         delete[] yearsArray;
         yearsArray = NULL;
         return EASTER_IO_ERROR;
     }
-
+    
+    // VKLADANI DO SOUBORU
+    
+    file << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>C++</title></head><body><table width=\"300\">";
+    
+    for(int i = 0; i < numOfYears; i++){
+        int day, month;
+        EasterDate(yearsArray[i], day, month);
+        file << "<tr><td>" << day << "</td><td>" << month << "</td><td>" << yearsArray[i] << "</td></tr>";
+    }
+    
+    file << "</table></body></html>";
+    
     // ZAVRENI SOUBORU
     file.close();
     
     // ODALOKOVANI
     delete[] yearsArray;
     yearsArray = NULL;
+    
     return EASTER_OK;
 }
 
@@ -204,7 +224,7 @@ int easterReport (const string& years, const string& outFileName){
 int main ( int argc, char * argv[] )
 {
     
-    cout << easterReport ("2012,2013,2015-2020","out.html") << endl;
+    cout << easterReport ("2012,2013,2015-2020","/Users/lukstankovic/ahoj.html") << endl;
 
 
 
