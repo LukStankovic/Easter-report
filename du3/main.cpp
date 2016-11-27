@@ -14,9 +14,6 @@ using namespace std;
 #define EASTER_INVALID_FILENAME  1
 #define EASTER_INVALID_YEARS     2
 #define EASTER_IO_ERROR          3
-
-using year_t = unsigned;
-
 #endif /* __PROGTEST__ */
 
 
@@ -140,6 +137,35 @@ void ParseYears(const string& str, int* parsedYears){
     
 }
 
+void EasterDate(int year, int& day, int& month){
+    month = 3;
+    // Determine the Golden number:
+    int G = year % 19 + 1;
+    // Determine the century number:
+    int C = year / 100 + 1;
+    // Correct for the years who are not leap years:
+    int X = ( 3 * C ) / 4 - 12;
+    // Mooncorrection:
+    int Y = ( 8 * C + 5 ) / 25 - 5;
+    // Find sunday:
+    int Z = ( 5 * year ) / 4 - X - 10;
+    // Determine epact(age of moon on 1 januari of that year(follows a cycle of 19 years):
+    int E = ( 11 * G + 20 + Y - X ) % 30;
+    if (E == 24) {E++;}
+    if ((E == 25) && (G > 11)) {E++;}
+    // Get the full moon:
+    int N = 44 - E;
+    if (N < 21) {N = N + 30;}
+    // Up to sunday:
+    int P = ( N + 7 ) - ( ( Z + N ) % 7 );
+    // Easterdate:
+    if ( P > 31 )
+    {
+        P = P - 31;
+        month = 4;
+    }
+    day = P;
+}
 
 int easterReport (const string& years, const string& outFileName){
    
@@ -161,9 +187,10 @@ int easterReport (const string& years, const string& outFileName){
     
     
     
-    
-    
-    
+    for(int i = 0; i < numOfYears; i++){
+        int day, month;
+        EasterDate(yearsArray[i], day, month);
+    }
     
     // OTEVRENI SOUBORU A KONTROLA IO
     ofstream file (outFileName);
@@ -187,7 +214,7 @@ int easterReport (const string& years, const string& outFileName){
 int main ( int argc, char * argv[] )
 {
     
-    cout << easterReport ("2000-3000","out.html") << endl;
+    cout << easterReport ("2012,2013,2015-2020","out.html") << endl;
 
 
 
