@@ -16,6 +16,12 @@ using namespace std;
 #define EASTER_IO_ERROR          3
 #endif /* __PROGTEST__ */
 
+bool IsNumber(char character){
+    if(character < '0' || character > '9')
+        return false;
+    else
+        return true;
+}
 
 bool IsHTML(const string& path){
     unsigned long i = path.length()-1; // potom změnit na int!!!!
@@ -39,52 +45,58 @@ bool IsHTML(const string& path){
 int CountYears(const string& str){
     
     string tmp;
-    int k = 0;
+    int num = 0;
     bool interval = false;
+    int lastYear = 0;
     for(unsigned int i = 0; i < str.length(); i++){
-        int yearNow;
-        tmp += str[i];
+        
+        if(IsNumber(str[i]))
+            tmp += str[i];
         
         if(str[i] == ','){
-            
             if(interval){
-                int start = yearNow;
-                for(int j = start+1; j <= stoi(tmp); j++,k++){
-                    yearNow = j;
+                int start = lastYear;
+                for(int j = start; j <= stoi(tmp); j++){
+                    num++;
                 }
                 tmp = "";
+                interval = false;
             }else{
-                yearNow = stoi(tmp);
-                k++;
-                tmp = "";
+                if(tmp != ""){
+                    num++;
+                    tmp = "";
+                }
             }
         }
         
         if(str[i] == '-'){
-            interval = true;
-            yearNow = stoi(tmp);
-            tmp = "";
-            k++;
+            if(tmp != ""){
+                interval = true;
+                lastYear = stoi(tmp);
+                tmp = "";
+            }
         }
         
         if(i == str.length()-1){
             
             if(interval){
-                int start = yearNow;
-                for(int j = start+1; j <= stoi(tmp); j++,k++){
-                    yearNow = j;
+                int start = lastYear;
+                for(int j = start; j <= stoi(tmp); j++){
+                    num++;
                 }
                 tmp = "";
+                interval = false;
             }else{
-                yearNow = stoi(tmp);
-                k++;
-                tmp = "";
+                if(tmp != ""){
+                    num++;
+                    tmp = "";
+                }
             }
             
         }
         
     }
-    return k;
+    return num;
 }
 
 void ParseYears(const string& str, int* parsedYears){
@@ -94,27 +106,32 @@ void ParseYears(const string& str, int* parsedYears){
     bool interval = false;
     for(unsigned int i = 0; i < str.length(); i++){
     
-        tmp += str[i];
+        if(IsNumber(str[i]))
+            tmp += str[i];
         
         if(str[i] == ','){
-            
             if(interval){
                 int start = parsedYears[k];
-                for(int j = start+1; j <= stoi(tmp); j++,k++){
+                for(int j = start; j <= stoi(tmp); j++,k++){
                     parsedYears[k] = j;
                 }
                 tmp = "";
+                interval = false;
             }else{
-                parsedYears[k] = stoi(tmp);
-                k++;
-                tmp = "";
+                if(tmp != ""){
+                    parsedYears[k] = stoi(tmp);
+                    k++;
+                    tmp = "";
+                }
             }
         }
         
         if(str[i] == '-'){
-            interval = true;
-            parsedYears[k] = stoi(tmp);
-            tmp = "";
+            if(tmp != ""){
+                interval = true;
+                parsedYears[k] = stoi(tmp);
+                tmp = "";
+            }
         }
         
         if(i == str.length()-1){
@@ -125,10 +142,13 @@ void ParseYears(const string& str, int* parsedYears){
                     parsedYears[k] = j;
                 }
                 tmp = "";
+                interval = false;
             }else{
-                parsedYears[k] = stoi(tmp);
-                k++;
-                tmp = "";
+                if(tmp != ""){
+                    parsedYears[k] = stoi(tmp);
+                    k++;
+                    tmp = "";
+                }
             }
             
         }
@@ -136,6 +156,9 @@ void ParseYears(const string& str, int* parsedYears){
     }
     
 }
+
+
+
 
 void EasterDate(int year, int& day, int& month){
     month = 3;
@@ -183,8 +206,11 @@ int easterReport (const string& years, const string& outFileName){
     
     // KONTROLA ZDA JSOU OK - nevim jestli i rovno?
     for(int i = 0; i < numOfYears; i++){
-        if(yearsArray[i] <= 1582 || yearsArray[i] >= 2200)
+        if(yearsArray[i] <= 1582 || yearsArray[i] >= 2200){
+            delete[] yearsArray;
+            yearsArray = NULL;
             return EASTER_INVALID_YEARS;
+        }
     }
 
     // OTEVRENI SOUBORU A KONTROLA IO
@@ -197,8 +223,9 @@ int easterReport (const string& years, const string& outFileName){
     
     // VKLADANI DO SOUBORU
     
-    file << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>C++</title></head><body><table width=\"300\">";
-
+    file << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" << endl << "<html>" << endl << "<head>" << endl << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" << endl << "<title>C++</title>" << endl << "</head>" << endl << "<body>" << endl << "<table width=\"300\">" << endl;
+    
+    file << "<tr><th width=\"99\">den</th><th width=\"99\">mesic</th><th width=\"99\">rok</th></tr>" << endl;
     
     for(int i = 0; i < numOfYears; i++){
         int day, month;
@@ -208,10 +235,10 @@ int easterReport (const string& years, const string& outFileName){
             mothCZ = "brezen";
         else
             mothCZ = "duben";
-        file << "<tr><td>" << day << "</td><td>" << mothCZ << "</td><td>" << yearsArray[i] << "</td></tr>";
+        file << "<tr><td>" << day << "</td><td>" << mothCZ << "</td><td>" << yearsArray[i] << "</td></tr>" << endl;
     }
     
-    file << "</table></body></html>";
+    file << "</table>" << endl << "</body>" << endl << "</html>" << endl;
     
     // ZAVRENI SOUBORU
     file.close();
@@ -228,10 +255,22 @@ int easterReport (const string& years, const string& outFileName){
 int main ( int argc, char * argv[] )
 {
     
-    cout << easterReport ("2012,2013,2015-2020","/Users/lukstankovic/ahoj.html") << endl;
-
-
-
+     cout << easterReport ("2012,2013,2015- 2020","/Users/lukstankovic/ahoj.html") << endl;
+/*
+    string years = "1999, 2010, 2015-2018, 2018,,, , ,, ,, ,,,    as          ";
+    int numOfYears = CountYears(years);
+    int* yearsArray = new int[100];
+    
+    // NAPLNENI ROKAMA
+    cout << CountYears(years);
+    ParseYears(years, yearsArray);*/
+    /*
+    cout << "pocet: " << numOfYears << endl;
+    
+    for(int i = 0; i < numOfYears;i++)
+        cout << yearsArray[i] << ". "<< endl;
+*/
+    
     return 0;
     
 }
