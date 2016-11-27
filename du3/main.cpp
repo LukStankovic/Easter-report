@@ -187,8 +187,6 @@ int easterReport (const string& years, const string& outFileName){
             return EASTER_INVALID_YEARS;
     }
 
-    
-    
     // OTEVRENI SOUBORU A KONTROLA IO
     ofstream file(outFileName);
     if(file.fail()){
@@ -200,11 +198,17 @@ int easterReport (const string& years, const string& outFileName){
     // VKLADANI DO SOUBORU
     
     file << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>C++</title></head><body><table width=\"300\">";
+
     
     for(int i = 0; i < numOfYears; i++){
         int day, month;
         EasterDate(yearsArray[i], day, month);
-        file << "<tr><td>" << day << "</td><td>" << month << "</td><td>" << yearsArray[i] << "</td></tr>";
+        string mothCZ;
+        if(month == 3)
+            mothCZ = "brezen";
+        else
+            mothCZ = "duben";
+        file << "<tr><td>" << day << "</td><td>" << mothCZ << "</td><td>" << yearsArray[i] << "</td></tr>";
     }
     
     file << "</table></body></html>";
