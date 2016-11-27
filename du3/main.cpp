@@ -99,7 +99,7 @@ int CountYears(const string& str){
     return num;
 }
 
-void ParseYears(const string& str, int* parsedYears){
+int ParseYears(const string& str, int* parsedYears){
     
     string tmp;
     int k = 0;
@@ -112,6 +112,7 @@ void ParseYears(const string& str, int* parsedYears){
         if(str[i] == ','){
             if(interval){
                 int start = parsedYears[k];
+                
                 for(int j = start; j <= stoi(tmp); j++,k++){
                     parsedYears[k] = j;
                 }
@@ -154,7 +155,7 @@ void ParseYears(const string& str, int* parsedYears){
         }
         
     }
-    
+    return EASTER_OK;
 }
 
 
@@ -255,7 +256,7 @@ int easterReport (const string& years, const string& outFileName){
 int main ( int argc, char * argv[] )
 {
     
-     cout << easterReport ("2012,2013,2015- 2020","/Users/lukstankovic/ahoj.html") << endl;
+     cout << easterReport ("2012","/Users/lukstankovic/ahoj.html") << endl;
 /*
     string years = "1999, 2010, 2015-2018, 2018,,, , ,, ,, ,,,    as          ";
     int numOfYears = CountYears(years);

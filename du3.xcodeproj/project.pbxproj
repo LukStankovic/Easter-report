@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0749E6A11DEAF0F6008FA491 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0749E6A01DEAF0F6008FA491 /* main.cpp */; };
+		077C99E91DEB5E69005AF36D /* du3_vse_v_jedne.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 077C99E81DEB5E69005AF36D /* du3_vse_v_jedne.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		0749E69D1DEAF0F6008FA491 /* du3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = du3; sourceTree = BUILT_PRODUCTS_DIR; };
 		0749E6A01DEAF0F6008FA491 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		077C99E81DEB5E69005AF36D /* du3_vse_v_jedne.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = du3_vse_v_jedne.cpp; path = ../../du3_vse_v_jedne.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				0749E6A01DEAF0F6008FA491 /* main.cpp */,
+				077C99E81DEB5E69005AF36D /* du3_vse_v_jedne.cpp */,
 			);
 			path = du3;
 			sourceTree = "<group>";
@@ -121,6 +124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0749E6A11DEAF0F6008FA491 /* main.cpp in Sources */,
+				077C99E91DEB5E69005AF36D /* du3_vse_v_jedne.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +253,7 @@
 				0749E6A61DEAF0F6008FA491 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
