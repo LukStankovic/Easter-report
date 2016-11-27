@@ -23,6 +23,15 @@ bool IsNumber(char character){
         return true;
 }
 
+bool IsValidPath(const string& path){
+    for(unsigned int i = 0; i < path.length(); i++){
+        if (!isalnum(path[i]) && path[i] != '.' && path[i] != '/' && path[i] != '\\'){
+            return false;
+        }
+    }
+    return true;
+}
+
 bool IsHTML(const string& path){
     unsigned long i = path.length()-1; // potom změnit na int!!!!
     string fileExtension;
@@ -55,16 +64,25 @@ int CountYears(const string& str){
         
         if(str[i] == ','){
             if(interval){
-                int start = lastYear;
-                for(int j = start; j <= stoi(tmp); j++){
-                    num++;
+                if(tmp != ""){
+                    int start = lastYear;
+                    if(start > stoi(tmp))
+                        return EASTER_INVALID_YEARS;
+                    
+                    for(int j = start; j <= stoi(tmp); j++){
+                        num++;
+                    }
+                    tmp = "";
+                    interval = false;
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
-                tmp = "";
-                interval = false;
             }else{
                 if(tmp != ""){
                     num++;
                     tmp = "";
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
             }
         }
@@ -74,25 +92,35 @@ int CountYears(const string& str){
                 interval = true;
                 lastYear = stoi(tmp);
                 tmp = "";
+            }else{
+                return EASTER_INVALID_YEARS;
             }
         }
         
         if(i == str.length()-1){
             
             if(interval){
-                int start = lastYear;
-                for(int j = start; j <= stoi(tmp); j++){
-                    num++;
+                if(tmp != ""){
+                    int start = lastYear;
+                    if(start > stoi(tmp))
+                        return EASTER_INVALID_YEARS;
+                    for(int j = start; j <= stoi(tmp); j++){
+                        num++;
+                    }
+                    tmp = "";
+                    interval = false;
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
-                tmp = "";
-                interval = false;
             }else{
                 if(tmp != ""){
                     num++;
                     tmp = "";
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
             }
-            
+        
         }
         
     }
@@ -105,24 +133,31 @@ int ParseYears(const string& str, int* parsedYears){
     int k = 0;
     bool interval = false;
     for(unsigned int i = 0; i < str.length(); i++){
-    
+        
         if(IsNumber(str[i]))
             tmp += str[i];
         
         if(str[i] == ','){
-            if(interval){
-                int start = parsedYears[k];
-                
-                for(int j = start; j <= stoi(tmp); j++,k++){
-                    parsedYears[k] = j;
+            if(interval){ // INTERVAL
+                if(tmp != ""){
+                    int start = parsedYears[k];
+                    if(start > stoi(tmp))
+                        return EASTER_INVALID_YEARS;
+                    for(int j = start; j <= stoi(tmp); j++,k++){
+                        parsedYears[k] = j;
+                    }
+                    tmp = "";
+                    interval = false;
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
-                tmp = "";
-                interval = false;
             }else{
                 if(tmp != ""){
                     parsedYears[k] = stoi(tmp);
                     k++;
                     tmp = "";
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
             }
         }
@@ -132,23 +167,33 @@ int ParseYears(const string& str, int* parsedYears){
                 interval = true;
                 parsedYears[k] = stoi(tmp);
                 tmp = "";
+            }else{
+                return EASTER_INVALID_YEARS;
             }
         }
         
         if(i == str.length()-1){
             
-            if(interval){
-                int start = parsedYears[k];
-                for(int j = start; j <= stoi(tmp); j++,k++){
-                    parsedYears[k] = j;
+            if(interval){ // INTERVAL
+                if(tmp != ""){
+                    int start = parsedYears[k];
+                    if(start > stoi(tmp))
+                        return EASTER_INVALID_YEARS;
+                    for(int j = start; j <= stoi(tmp); j++,k++){
+                        parsedYears[k] = j;
+                    }
+                    tmp = "";
+                    interval = false;
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
-                tmp = "";
-                interval = false;
             }else{
                 if(tmp != ""){
                     parsedYears[k] = stoi(tmp);
                     k++;
                     tmp = "";
+                }else{
+                    return EASTER_INVALID_YEARS;
                 }
             }
             
@@ -194,8 +239,11 @@ void EasterDate(int year, int& day, int& month){
 }
 
 int easterReport (const string& years, const string& outFileName){
-   
+    
     if(!IsHTML(outFileName))
+        return EASTER_INVALID_FILENAME;
+    
+    if(!IsValidPath(outFileName))
         return EASTER_INVALID_FILENAME;
     
     int numOfYears = CountYears(years);
@@ -203,7 +251,8 @@ int easterReport (const string& years, const string& outFileName){
     
     // NAPLNENI ROKAMA
     
-    ParseYears(years, yearsArray);
+    if(ParseYears(years, yearsArray) == EASTER_INVALID_YEARS)
+        return EASTER_INVALID_YEARS;
     
     // KONTROLA ZDA JSOU OK - nevim jestli i rovno?
     for(int i = 0; i < numOfYears; i++){
@@ -213,7 +262,7 @@ int easterReport (const string& years, const string& outFileName){
             return EASTER_INVALID_YEARS;
         }
     }
-
+    
     // OTEVRENI SOUBORU A KONTROLA IO
     ofstream file(outFileName);
     if(file.fail()){
@@ -256,21 +305,21 @@ int easterReport (const string& years, const string& outFileName){
 int main ( int argc, char * argv[] )
 {
     
-     cout << easterReport ("2012","/Users/lukstankovic/ahoj.html") << endl;
-/*
-    string years = "1999, 2010, 2015-2018, 2018,,, , ,, ,, ,,,    as          ";
-    int numOfYears = CountYears(years);
-    int* yearsArray = new int[100];
-    
-    // NAPLNENI ROKAMA
-    cout << CountYears(years);
-    ParseYears(years, yearsArray);*/
+    cout << easterReport ("ahoj svete, 2015","/Users/lukstankovic/ahoj.html") << endl;
     /*
-    cout << "pocet: " << numOfYears << endl;
-    
-    for(int i = 0; i < numOfYears;i++)
-        cout << yearsArray[i] << ". "<< endl;
-*/
+     string years = "1999, 2010, 2015-2018, 2018,,, , ,, ,, ,,,    as          ";
+     int numOfYears = CountYears(years);
+     int* yearsArray = new int[100];
+     
+     // NAPLNENI ROKAMA
+     cout << CountYears(years);
+     ParseYears(years, yearsArray);*/
+    /*
+     cout << "pocet: " << numOfYears << endl;
+     
+     for(int i = 0; i < numOfYears;i++)
+     cout << yearsArray[i] << ". "<< endl;
+     */
     
     return 0;
     
